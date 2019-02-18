@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:with_flutter/presentation/main/MainPresenter.dart';
 
 class MainView extends StatefulWidget {
   @override
@@ -10,6 +11,24 @@ class MainView extends StatefulWidget {
 
 
 class MainState extends State<MainView> {
+  MainPresenter presenter;
+
+  MainStateModel state  = MainStateModel();
+  @override
+  void initState() {
+    super.initState();
+    presenter = new MainPresenter(this);
+  }
+
+  @override
+  void show(MainStateModel state) {
+    setState(() {
+      this.state = state;
+
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -27,20 +46,24 @@ class MainState extends State<MainView> {
               UserInfoView(
                   "Время между нажатиями", "Время", "Место в рейтинге ", 4, 4),
               Divider(),
-              UserInfo2View("Все голоса", 3, 6),
+              UserInfo2View("Все голоса", state.wishCountAllCons, state.wishCountAllProps),
               Divider(),
-              UserInfo2View("Ваши голоса", 15, 2),
+              UserInfo2View("Ваши голоса", state.wishCountUserCons, state.wishCountUserProps),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      presenter.handle(UIEvent.minus);
+                    },
                     tooltip: 'Minus',
                     child: Icon(Icons.exposure_neg_1),
                   ),
                   FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      presenter.handle(UIEvent.plus);
+                    },
                     tooltip: 'Plus',
                     child: Icon(Icons.exposure_plus_1),
                   ),
@@ -121,3 +144,7 @@ class UserInfo2View extends StatelessWidget {
     ]);
   }
 }
+
+
+
+
