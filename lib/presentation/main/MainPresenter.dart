@@ -1,26 +1,35 @@
-import 'package:with_flutter/data/Model.dart';
+import 'package:with_flutter/data/Repository.dart';
+import 'package:with_flutter/data/WishInfo.dart';
 import 'package:with_flutter/presentation/main/MainView.dart';
 
 class MainPresenter {
   MainState view;
   MainStateModel stateModel = MainStateModel();
 
-  MainPresenter(this.view);
+  MainPresenter(this.view) {
+    Repository.subject.listen((data) => this.update(data));
+  }
+
+  void update(WishInfo data) {
+    print("update presenter");
+    var action = MainAction(type: TypeMainAction.updateData, data: data);
+    reducer(action);
+  }
 
   void handle(UIEvent wish) async {
     switch (wish) {
       case UIEvent.plus:
         {
           print("teee");
-          await Model.addWish(1);
-          reducer(MainAction(TypeMainAction.plus, null));
+          await Repository.incrementProps();
+          reducer(MainAction(type: TypeMainAction.plus, data: null));
         }
         break;
 
       case UIEvent.minus:
         {
-          await Model.addWish(1);
-          reducer(MainAction(TypeMainAction.minus, null));
+          await Repository.incrementCons();
+          reducer(MainAction(type: TypeMainAction.minus, data: null));
         }
         break;
     }
@@ -30,13 +39,13 @@ class MainPresenter {
     switch (action.type) {
       case TypeMainAction.plus:
         {
-          stateModel.wishCountUserProps = stateModel.wishCountUserProps + 1;
+          stateModel.countUserProps = stateModel.countUserProps + 1;
         }
         break;
 
       case TypeMainAction.minus:
         {
-          stateModel.wishCountUserCons = stateModel.wishCountUserCons + 1;
+          stateModel.countUserCons = stateModel.countUserCons + 1;
         }
         break;
       case TypeMainAction.updateData:
@@ -44,10 +53,8 @@ class MainPresenter {
           var data = action.data;
 
           if (data != null) {
-            stateModel.wishCountUserCons = data.wishCountUserCons;
-            stateModel.wishCountUserProps = data.wishCountUserProps;
-            stateModel.wishCountAllProps = data.wishCountAllProps;
-            stateModel.wishCountAllCons = data.wishCountAllCons;
+            stateModel.countAllProps = data.countAllProps;
+            stateModel.countAllCons = data.countAllCons;
           }
         }
     }
@@ -62,15 +69,14 @@ enum TypeMainAction { minus, plus, updateData }
 
 class MainAction {
   TypeMainAction type;
-  DataModel data;
+  WishInfo data;
 
-  MainAction(this.type, this.data);
+  MainAction({this.type, this.data});
 }
 
-
 class MainStateModel {
-  int wishCountUserCons = 0;
-  int wishCountAllProps = 0;
-  int wishCountUserProps = 0;
-  int wishCountAllCons = 0;
+  int countUserCons = 0;
+  int countAllProps = 0;
+  int countUserProps = 0;
+  int countAllCons = 0;
 }

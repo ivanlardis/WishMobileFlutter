@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:with_flutter/data/Model.dart';
+import 'package:with_flutter/data/Repository.dart';
 import 'package:with_flutter/presentation/BottomNavigationView.dart';
 
 void main() {
-  Model.init();
+  Repository.init();
   runApp(new ThemeApp());
 }
 class ThemeApp extends StatelessWidget {

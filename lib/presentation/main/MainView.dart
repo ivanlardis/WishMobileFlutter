@@ -46,9 +46,9 @@ class MainState extends State<MainView> {
               UserInfoView(
                   "Время между нажатиями", "Время", "Место в рейтинге ", 4, 4),
               Divider(),
-              UserInfo2View("Все голоса", state.wishCountAllCons, state.wishCountAllProps),
+              UserInfo2View("Все голоса", state.countAllCons, state.countAllProps),
               Divider(),
-              UserInfo2View("Ваши голоса", state.wishCountUserCons, state.wishCountUserProps),
+              UserInfo2View("Ваши голоса", state.countUserCons, state.countUserProps),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
