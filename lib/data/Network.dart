@@ -11,28 +11,36 @@ import 'dart:convert';
 class Network {
   static void saveWish(Wish wish) async {
     var body = json.encode(wish.toJson());
-
+    var authorization = await getAuthorization();
     await http.post('http://10.0.2.2:8888/wish', body: body, headers: {
       "Accept": "application/json",
       "Content-type": "application/json",
+      "Authorization": authorization,
     });
   }
 
-  static Future<Wish> loadWish() async {
-    var response = await http.get('http://10.0.2.2:8888/wish');
-
-    Map map = json.decode(response.body);
-
-    Wish networkWish = Wish.fromJson(map);
-    return networkWish;
+  static Future<Map<String, String>> getHeaders() async {
+    var authorization = await getAuthorization();
+    var headers = {"Authorization":  authorization};
+    return headers;
   }
 
-  static Future<WishInfo> loadWishInfo() async {
-    var response = await http.get('http://10.0.2.2:8888/wishinfo');
+  static Future<String> getAuthorization() async {
+    var prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString(Prefs.TOKEN.toString()) ?? "";
+    return "Bearer ${token}";
+  }
 
+  static Future<WishsInfo> loadWishInfo() async {
+    var headers = await getHeaders();
+
+    var response =
+        await http.get('http://10.0.2.2:8888/wishinfo', headers: headers);
+
+    print("loadWishInfo body ${response.body}");
     Map map = json.decode(response.body);
 
-    WishInfo networkWish = WishInfo.fromJson(map);
+    WishsInfo networkWish = WishsInfo.fromJson(map);
     return networkWish;
   }
 
@@ -40,10 +48,13 @@ class Network {
     print("registation");
     var body = json.encode(user.toJson());
 
-    var response =
-        await http.post('http://10.0.2.2:8888/register', body: body, headers: {
-      "Content-type": "application/json",
-    });
+    var authorization = await getAuthorization();
+    var response = await http.post('http://10.0.2.2:8888/register',
+        body: body,
+        headers: {
+          "Content-type": "application/json",
+          "Authorization": authorization
+        });
 
     print(response.statusCode);
     print(response.body);

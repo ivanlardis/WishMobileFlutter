@@ -13,7 +13,7 @@ class MainView extends StatefulWidget {
 class MainState extends State<MainView> {
   MainPresenter presenter;
 
-  MainStateModel state  = MainStateModel();
+    MainStateModel state  = MainStateModel();
   @override
   void initState() {
     super.initState();
@@ -21,13 +21,18 @@ class MainState extends State<MainView> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    presenter = null;
+  }
+
+  @override
   void show(MainStateModel state) {
     setState(() {
-      this.state = state;
+       this.state = state;
 
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +46,10 @@ class MainState extends State<MainView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               UserInfoView(
-                  "Нажатий за минуту", "Количество", "Место в рейтинге ", 4, 4),
+                  "Быстрота нажатий", "Время (мс)", "Место в рейтинге ", state.timeUserBetweenPressed, state.placeUserBetweenPressed),
               Divider(),
               UserInfoView(
-                  "Время между нажатиями", "Время", "Место в рейтинге ", 4, 4),
+                  "Общее количество нажатий", "Количество", "Место в рейтинге ", state.countPressedUser, state.placePressedUser),
               Divider(),
               UserInfo2View("Все голоса", state.countAllCons, state.countAllProps),
               Divider(),

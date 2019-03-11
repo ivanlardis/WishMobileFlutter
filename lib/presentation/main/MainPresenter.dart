@@ -10,7 +10,7 @@ class MainPresenter {
     Repository.subject.listen((data) => this.update(data));
   }
 
-  void update(WishInfo data) {
+  void update(WishsInfo data) {
     print("update presenter");
     var action = MainAction(type: TypeMainAction.updateData, data: data);
     reducer(action);
@@ -21,14 +21,13 @@ class MainPresenter {
       case UIEvent.plus:
         {
           print("teee");
-          await Repository.incrementProps();
+
           reducer(MainAction(type: TypeMainAction.plus, data: null));
         }
         break;
 
       case UIEvent.minus:
         {
-          await Repository.incrementCons();
           reducer(MainAction(type: TypeMainAction.minus, data: null));
         }
         break;
@@ -39,13 +38,15 @@ class MainPresenter {
     switch (action.type) {
       case TypeMainAction.plus:
         {
-          stateModel.countUserProps = stateModel.countUserProps + 1;
+          stateModel.countUserProps =  stateModel.countUserProps + 1;
+          Repository.updateWish(stateModel);
         }
         break;
 
       case TypeMainAction.minus:
         {
-          stateModel.countUserCons = stateModel.countUserCons + 1;
+         stateModel.countUserCons = stateModel.countUserCons + 1;
+          Repository.updateWish(stateModel);
         }
         break;
       case TypeMainAction.updateData:
@@ -55,6 +56,34 @@ class MainPresenter {
           if (data != null) {
             stateModel.countAllProps = data.countAllProps;
             stateModel.countAllCons = data.countAllCons;
+
+            if (stateModel.countUserCons < data.countUserCons) {
+              stateModel.countUserCons = data.countUserCons;
+            }
+
+            if (stateModel.countUserProps < data.countUserProps) {
+              stateModel.countUserProps = data.countUserProps;
+            }
+
+            var wish = data.wishsFull;
+            wish.sort((a, b) =>
+                (a.timeAfterLastPress) > (b.timeAfterLastPress) ? 1 : -1);
+
+            stateModel.placeUserBetweenPressed =
+                wish.indexWhere((element) => element.id == data.ownerId)+1;
+
+            var owner =
+                wish.firstWhere((element) => element.id == data.ownerId);
+            stateModel.timeUserBetweenPressed = owner.timeAfterLastPress;
+            stateModel.countPressedUser = owner.countProps + owner.countCons;
+
+
+            wish.sort((a, b) =>
+            (a.getAllCountPressed()) < (b.getAllCountPressed()) ? 1 : -1);
+
+            stateModel.placePressedUser =
+                wish.indexWhere((element) => element.id == data.ownerId)+1;
+
           }
         }
     }
@@ -69,7 +98,7 @@ enum TypeMainAction { minus, plus, updateData }
 
 class MainAction {
   TypeMainAction type;
-  WishInfo data;
+  WishsInfo data;
 
   MainAction({this.type, this.data});
 }
@@ -79,4 +108,9 @@ class MainStateModel {
   int countAllProps = 0;
   int countUserProps = 0;
   int countAllCons = 0;
+
+  int countPressedUser = 0;
+  int placePressedUser = 0;
+  int timeUserBetweenPressed = 0;
+  int placeUserBetweenPressed = 0;
 }

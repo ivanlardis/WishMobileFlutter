@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:with_flutter/data/Network.dart';
 import 'package:with_flutter/presentation/login/LoginView.dart';
+import 'package:with_flutter/presentation/main/MainPresenter.dart';
+import 'package:with_flutter/presentation/main/MainView.dart';
 import 'package:with_flutter/presentation/registration/Registration.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -72,6 +74,7 @@ class ProfileState extends State<ProfileView> {
   }
 
   void logout() async {
+
     Network.logout();
 
     Navigator.pushReplacement(
