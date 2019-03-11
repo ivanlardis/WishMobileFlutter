@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:with_flutter/data/Network.dart';
+import 'package:with_flutter/models/User.dart';
+import 'package:with_flutter/presentation/BottomNavigationView.dart';
+import 'package:with_flutter/presentation/registration/Registration.dart';
+import 'package:with_flutter/utils/Prefs.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -6,9 +12,16 @@ class LoginView extends StatefulWidget {
 }
 
 class LoginState extends State<LoginView> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  String username = "";
+  String password = "";
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text("Вход"),
@@ -20,14 +33,23 @@ class LoginState extends State<LoginView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextField(
-                decoration: InputDecoration(hintText: 'Логин'),
+                onChanged: (text) {
+                  username = text;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Логин',
+                ),
               ),
               TextField(
+                onChanged: (text) {
+                  password = text;
+                },
                 decoration: InputDecoration(hintText: 'Пароль'),
               ),
               FlatButton(
                 textColor: Colors.blue,
-                onPressed: () {},
+                onPressed: () => _loginUser(
+                    User(username: username, password: password), context),
                 child: Text("Войти"),
               ),
               FlatButton(
@@ -38,53 +60,37 @@ class LoginState extends State<LoginView> {
                     MaterialPageRoute(builder: (context) => RegistrationView()),
                   );
                 },
-                child: Text("Зарегистрироваться"),
+                child: Text("Регистрация"),
               ),
             ],
           ))),
     );
   }
-}
 
-class RegistrationView extends StatefulWidget {
-  @override
-  createState() => RegistrationState();
-}
+  void _loginUser(User user, BuildContext context) async {
+    if (user.username.length < 3 || user.password.length < 3) {
+      _scaffoldKey.currentState.showSnackBar(new SnackBar(
+        content: new Text("Длина пароля и логина от 3 знаков"),
+      ));
+      return;
+    }
 
-class RegistrationState extends State<RegistrationView> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      appBar: AppBar(
-        title: Text("Регистрация"),
-      ),
-      body: Container(
-          margin: EdgeInsets.all(36),
-          child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  TextField(
-                    decoration: InputDecoration(hintText: 'Логин'),
-                  ),
-                  TextField(
-                    decoration: InputDecoration(hintText: 'Пароль'),
-                  ),
+    print("_loginUser");
+    var success = await Network.login(user);
 
-                  FlatButton(
+    if (success) {
+      _scaffoldKey.currentState.showSnackBar(new SnackBar(
+        content: new Text("Пользователь успешно вошел"),
+      ));
 
-                    textColor: Colors.blue,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => RegistrationView()),
-                      );
-                    },
-                    child: Text("Зарегистрироваться"),
-                  ),
-                ],
-              ))),
-    );
+      Navigator.pushReplacement(
+        _scaffoldKey.currentContext,
+        MaterialPageRoute(builder: (context) => BottomNavigationView()),
+      );
+    } else {
+      _scaffoldKey.currentState.showSnackBar(new SnackBar(
+        content: new Text("Ошибка входа"),
+      ));
+    }
   }
 }

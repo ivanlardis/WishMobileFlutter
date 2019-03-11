@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:with_flutter/data/Wish.dart';
+import 'package:with_flutter/models/Wish.dart';
 import 'package:with_flutter/utils/Prefs.dart';
 
 class Storage {

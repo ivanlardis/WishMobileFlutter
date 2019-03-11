@@ -1,5 +1,5 @@
 import 'package:with_flutter/data/Repository.dart';
-import 'package:with_flutter/data/WishInfo.dart';
+import 'package:with_flutter/models/WishInfo.dart';
 import 'package:with_flutter/presentation/main/MainView.dart';
 
 class MainPresenter {

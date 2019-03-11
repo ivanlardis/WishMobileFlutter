@@ -1,15 +1,15 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:with_flutter/data/Storage.dart';
 import 'package:with_flutter/data/Network.dart';
-import 'package:with_flutter/data/WishInfo.dart';
+import 'package:with_flutter/models/WishInfo.dart';
 
 class Repository {
   static final subject = BehaviorSubject<WishInfo>();
 
   static void init() async {
-
-    var timerObservable = Observable.periodic(Duration(seconds: 1));
-    timerObservable.listen((i) => syncWithNetwork());
+//
+//    var timerObservable = Observable.periodic(Duration(seconds: 1));
+//    timerObservable.listen((i) => syncWithNetwork());
   }
 
   static void syncWithNetwork() async {

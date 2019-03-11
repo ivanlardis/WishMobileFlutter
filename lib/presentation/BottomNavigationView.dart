@@ -13,9 +13,11 @@ class BottomNavigationView extends StatefulWidget {
 class BottomNavigationViewState extends State<BottomNavigationView> {
   int index = 0;
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      key: _scaffoldKey,
       body: new Stack(
         children: <Widget>[
           new Offstage(
@@ -43,7 +45,7 @@ class BottomNavigationViewState extends State<BottomNavigationView> {
             offstage: index != 3,
             child: new TickerMode(
               enabled: index == 3,
-              child: new MaterialApp(home: new ProfileView()),
+              child: new MaterialApp(home: new ProfileView(_scaffoldKey)),
             ),
           ),
         ],

@@ -1,6 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:with_flutter/data/Wish.dart';
-import 'package:with_flutter/data/WishInfo.dart';
+import 'package:with_flutter/models/Token.dart';
+import 'package:with_flutter/models/User.dart';
+import 'package:with_flutter/models/Wish.dart';
+import 'package:with_flutter/models/WishInfo.dart';
 import 'package:with_flutter/utils/Prefs.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,7 +12,7 @@ class Network {
   static void saveWish(Wish wish) async {
     var body = json.encode(wish.toJson());
 
-        await http.post('http://10.0.2.2:8888/wish', body: body, headers: {
+    await http.post('http://10.0.2.2:8888/wish', body: body, headers: {
       "Accept": "application/json",
       "Content-type": "application/json",
     });
@@ -32,5 +34,60 @@ class Network {
 
     WishInfo networkWish = WishInfo.fromJson(map);
     return networkWish;
+  }
+
+  static Future<bool> registation(User user) async {
+    print("registation");
+    var body = json.encode(user.toJson());
+
+    var response =
+        await http.post('http://10.0.2.2:8888/register', body: body, headers: {
+      "Content-type": "application/json",
+    });
+
+    print(response.statusCode);
+    print(response.body);
+    return response.statusCode == 200;
+  }
+
+  static Future<bool> login(User user) async {
+    print("login");
+    final clientID = "com.lardis.wish";
+    final body =
+        "username=${user.username}&password=${user.password}&grant_type=password";
+    final clientCredentials = Base64Encoder().convert("$clientID:".codeUnits);
+
+    var response = await http
+        .post('http://10.0.2.2:8888/auth/token', body: body, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Basic $clientCredentials"
+    });
+
+    if (response.statusCode == 200) {
+      Map map = json.decode(response.body);
+      Token token = Token.fromJson(map);
+
+      print("token = ${token.access_token}");
+
+      var prefs = await SharedPreferences.getInstance();
+      prefs.setString(Prefs.TOKEN.toString(), token.access_token);
+      prefs.setString(Prefs.USER_NAME.toString(), user.username);
+    }
+
+    print(response.statusCode);
+    print(response.body);
+    return response.statusCode == 200;
+  }
+
+  static Future<bool> isLogin() async {
+    var prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString(Prefs.TOKEN.toString()) ?? "";
+
+    return (token.length > 0);
+  }
+
+  static void logout() async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setString(Prefs.TOKEN.toString(), "");
   }
 }
