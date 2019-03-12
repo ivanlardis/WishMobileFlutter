@@ -9,10 +9,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Network {
+
+
+  static var url ="http://34.73.27.234:8888";
   static void saveWish(Wish wish) async {
     var body = json.encode(wish.toJson());
     var authorization = await getAuthorization();
-    await http.post('http://10.0.2.2:8888/wish', body: body, headers: {
+    await http.post('$url/wish', body: body, headers: {
       "Accept": "application/json",
       "Content-type": "application/json",
       "Authorization": authorization,
@@ -35,7 +38,7 @@ class Network {
     var headers = await getHeaders();
 
     var response =
-        await http.get('http://10.0.2.2:8888/wishinfo', headers: headers);
+        await http.get('$url/wishinfo', headers: headers);
 
     print("loadWishInfo body ${response.body}");
     Map map = json.decode(response.body);
@@ -49,7 +52,7 @@ class Network {
     var body = json.encode(user.toJson());
 
     var authorization = await getAuthorization();
-    var response = await http.post('http://10.0.2.2:8888/register',
+    var response = await http.post('$url/register',
         body: body,
         headers: {
           "Content-type": "application/json",
@@ -69,7 +72,7 @@ class Network {
     final clientCredentials = Base64Encoder().convert("$clientID:".codeUnits);
 
     var response = await http
-        .post('http://10.0.2.2:8888/auth/token', body: body, headers: {
+        .post('$url/auth/token', body: body, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Basic $clientCredentials"
     });
