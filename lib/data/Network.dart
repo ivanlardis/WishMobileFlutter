@@ -11,7 +11,7 @@ import 'dart:convert';
 class Network {
 
 
-  static var url ="http://34.73.27.234:8888";
+  static var url ="http://34.73.164.26:8888";
   static void saveWish(Wish wish) async {
     var body = json.encode(wish.toJson());
     var authorization = await getAuthorization();
